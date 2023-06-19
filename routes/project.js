@@ -48,30 +48,22 @@ router.post('/', async (req, res) => {
 
 
 // Update a project
-router.patch('/:id', (req, res) => {
+router.patch('/userid/:userid', (req, res) => {
   const { active } = req.body;
-  const projectId = req.params.id;
+  const { userid } = req.params;
 
-  Project.findById(projectId)
-    .then((project) => {
-      if (!project) {
+  Project.findOneAndUpdate({ userId: userid }, { active: active }, { new: true })
+    .then((updatedProject) => {
+      if (!updatedProject) {
         return res.status(404).json({ error: 'Project not found' });
       }
-
-      project.active = active;
-
-      project.save()
-        .then((updatedProject) => {
-          res.json(updatedProject);
-        })
-        .catch((err) => {
-          res.status(500).json({ error: 'Failed to update project', message: err.message });
-        });
+      res.json(updatedProject);
     })
     .catch((err) => {
-      res.status(500).json({ error: 'Failed to fetch project', message: err.message });
+      res.status(500).json({ error: 'Failed to update project', message: err.message });
     });
 });
+
 
 
 
