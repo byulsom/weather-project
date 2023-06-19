@@ -1,0 +1,51 @@
+GET http://localhost:3000/weather/company
+
+###
+GET http://localhost:3000/user/64851949a5c26df226f56929
+
+###
+POST http://localhost:3000/weather/user
+Content-Type: application/json
+
+{
+    "username": "kbw21",
+    "email": "kbw21@gmail.com",
+    "password": "kbw"
+}
+
+###
+POST http://localhost:3000/weather/company
+Content-Type: application/json
+
+{
+    "companyname": "kbwcom",
+    "email": "kbwcom@gmail.com",
+    "password": "kbwcom"
+}
+
+###
+POST http://localhost:3000/weather/unlimit
+Content-Type: application/json
+
+{
+    "unlimitname": "unlikbw",
+    "email": "unlikbw@gmail.com",
+    "password": "unlikim"
+}
+
+
+
+
+###
+DELETE http://localhost:3000/weather/user/6486c2745e8cdd835be2cfb4
+
+
+
+
+###
+PATCH http://localhost:3000/user/64851949a5c26df226f56929
+Content-Type: application/json
+
+{
+    "username": "newtest"
+}
