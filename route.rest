@@ -4,12 +4,12 @@ GET http://localhost:3000/weather/company
 GET http://localhost:3000/user/64851949a5c26df226f56929
 
 ###
-POST http://localhost:3000/weather/user
+POST http://localhost:3000/weather/user/login
 Content-Type: application/json
 
 {
-    "username": "kbw21",
-    "email": "kbw21@gmail.com",
+    "username": "kbw",
+   
     "password": "kbw"
 }
 
