@@ -63,7 +63,7 @@ app.post("/weather/user/login", async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ companyId: company._id }, secretKey);
+    const token = jwt.sign({ userId: user._id }, secretKey);
     
     res
       .cookie("hasVisited", token, { httpOnly: true })
@@ -73,6 +73,7 @@ app.post("/weather/user/login", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
 
 // Login company
 app.post("/weather/company/login", async (req, res) => {
