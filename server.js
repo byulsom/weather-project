@@ -77,7 +77,6 @@ app.post("/weather/user/login", async (req, res) => {
 });
 
 
-
 // Login company
 app.post("/weather/company/login", async (req, res) => {
   try {
