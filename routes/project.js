@@ -17,6 +17,12 @@ router.get('/:id', getProject, (req, res) => {
   res.json(res.project);
 });
 
+// Getting one project by userid
+router.get('/:userid', getProjectByUserId, (req, res) => {
+  res.json(res.project);
+});
+
+
 // Create a project
 router.post('/', async (req, res) => {
   const { projectname, products, userid } = req.body;
@@ -97,6 +103,22 @@ router.delete('/:id', async (req, res) => {
 async function getProject(req, res, next) {
   try {
     const project = await Project.findById(req.params.id);
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+    res.project = project;
+    next();
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+}
+
+// Middleware to get a project by userid
+async function getProjectByUserId(req, res, next) {
+  const { userid } = req.params;
+
+  try {
+    const project = await Project.findOne({ userid });
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }
