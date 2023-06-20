@@ -46,7 +46,7 @@ app.use('/weather/product', productRouter);
 app.post("/weather/user/login", async (req, res) => {
   try {
     const { username, password } = req.body;
-    
+
     const user = await User.findOne({ username });
 
     if (!user) {
@@ -66,7 +66,7 @@ app.post("/weather/user/login", async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id }, secretKey);
-    
+
     res
       .cookie("hasVisited", token, { httpOnly: true })
       .status(200)
@@ -75,6 +75,8 @@ app.post("/weather/user/login", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
+
 
 
 // Login company

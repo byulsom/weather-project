@@ -60,7 +60,7 @@ const fetchWeatherData = async (latitude, longitude) => {
 
 
 ///cronjob
-const schedule = '* 1 * * *';
+const schedule = '* 1 1 * *';
 
 const cronJob = async () => {
   try {

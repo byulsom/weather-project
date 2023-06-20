@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
-const { authorizeUser } = require('../auth');
 const Project = require('../models/project');
 const Company = require('../models/company');
 

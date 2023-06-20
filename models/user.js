@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 
+// Define the user schema
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -37,9 +38,9 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   }
-
 });
 
+// Pre-save middleware to hash the password
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
@@ -55,6 +56,7 @@ userSchema.pre('save', async function (next) {
   }
 });
 
+// Method to compare entered password with the stored hashed password
 userSchema.methods.comparePassword = async function (enteredPassword) {
   try {
     return await bcrypt.compare(enteredPassword, this.password);
@@ -63,23 +65,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
   }
 };
 
-
-userSchema.methods.generateToken = function (cb) {
-  const user = this;
-  // jsonwebtoken을 사용해서 토큰 생성
-  const token = jwt.sign(user._id.toHexString(), "createToken");
-
-  user.token = token;
-  user.save(function (err, user) {
-    if (err) {
-      return cb(err); // Pass the error to the callback
-    }
-    cb(null, user);
-  });
-};
-
-
-
+// Create the User model
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

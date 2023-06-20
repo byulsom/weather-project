@@ -4,8 +4,7 @@ const User = require('../models/user');
 const axios = require('axios');
 const bcrypt = require('bcrypt');
 
-
-// Getting users
+// GET request to retrieve all users
 router.get('/', async (req, res) => {
   try {
     const users = await User.find();
@@ -15,12 +14,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Getting one user
+// GET request to retrieve a specific user by ID
 router.get('/:id', getUser, (req, res) => {
   res.json(res.user);
 });
 
-// Creating a new user
+// POST request to create a new user
 router.post('/', async (req, res) => {
   const { username, email, password, role } = req.body;
 
@@ -36,9 +35,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-
-
-// Updating a user
+// PATCH request to update a user
 router.patch('/:id', getUser, async (req, res) => {
   const { username, email, active } = req.body;
 
@@ -60,8 +57,7 @@ router.patch('/:id', getUser, async (req, res) => {
   }
 });
 
-
-// Deleting a user
+// DELETE request to set a user as inactive
 router.delete('/:id', async (req, res) => {
   try {
     const userId = req.params.id;
@@ -82,8 +78,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-
-
+// Middleware function to get a user by ID
 async function getUser(req, res, next) {
   try {
     const user = await User.findById(req.params.id);
