@@ -45,10 +45,7 @@ app.use('/weather/product', productRouter);
 // Login user
 app.post("/weather/user/login", async (req, res) => {
   try {
-    const { username, password } = req.body;
-
-    const user = await User.findOne({ username });
-
+    const user = await User.findOne({ username: req.body.username });
     if (!user) {
       return res.json({
         loginSuccess: false,
@@ -56,7 +53,7 @@ app.post("/weather/user/login", async (req, res) => {
       });
     }
 
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await user.comparePassword(req.body.password);
 
     if (!isMatch) {
       return res.json({
@@ -70,11 +67,13 @@ app.post("/weather/user/login", async (req, res) => {
     res
       .cookie("hasVisited", token, { httpOnly: true })
       .status(200)
-      .json({ loginSuccess: true, userId: user._id });
+      .json({ loginSuccess: true, userid: user._id.toString() });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
+
+
 
 
 

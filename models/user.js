@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 
-// Define the user schema
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -33,14 +32,9 @@ const userSchema = new mongoose.Schema({
   },
   tokenExp: {
     type: Number
-  },
-  active: {
-    type: Boolean,
-    default: true,
   }
 });
 
-// Pre-save middleware to hash the password
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
@@ -56,16 +50,31 @@ userSchema.pre('save', async function (next) {
   }
 });
 
-// Method to compare entered password with the stored hashed password
-userSchema.methods.comparePassword = async function (enteredPassword) {
+userSchema.methods.comparePassword = async function (plainPassword) {
   try {
-    return await bcrypt.compare(enteredPassword, this.password);
+    const isMatch = await bcrypt.compare(plainPassword, this.password);
+    return isMatch;
   } catch (err) {
-    throw new Error(err);
+    throw err;
   }
 };
 
-// Create the User model
-const User = mongoose.model('User', userSchema);
+userSchema.methods.generateToken = async function () {
+  try {
+    const user = this;
+    // jsonwebtoken을 사용해서 토큰 생성
+    const token = jwt.sign({ userId: user._id }, secretKey);
+
+    user.token = token;
+    await user.save(); // Save the updated document without a callback
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+
+const User = mongoose.model('user', userSchema);
 
 module.exports = User;
