@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Unlimit = require('../models/unlimit');
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 
 
 // Getting all unlimit
@@ -21,16 +23,21 @@ router.get('/:id', getUnlimit, (req, res) => {
 
 // Creating a new unlimit
 router.post('/', async (req, res) => {
-    const { unlimitname, email, password, role } = req.body;
-  
-    try {
-      const unlimit = new Unlimit({ unlimitname, email, password, role });
-      const newUnlimit = await unlimit.save();
-      res.status(201).json(newUnlimit);    
-    } catch (err) {
-      res.status(400).json({ message: err.message });
-    }
-  });
+  const { unlimitname, email, password, role } = req.body;
+
+  try {
+    // Create a new unlimit
+    const unlimit = new Unlimit({ unlimitname, email, password, role });
+    const newUnlimit = await user.save();
+
+    // Generate JWT token
+    const token = jwt.sign({ unlimitId: newUnlimit._id }, config.get('jwtSecret'));
+
+    res.status(201).json({ newUnlimit, token });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
   
 
 // Updating a unlimit

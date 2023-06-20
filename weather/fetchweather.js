@@ -1,6 +1,6 @@
 const axios = require('axios');
 const cron = require('node-cron');
-const config = require('../config');
+const config = require('../config/default');
 const WeatherData = require('../models/weather');
 const mongoose = require('mongoose');
 

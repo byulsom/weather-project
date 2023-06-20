@@ -22,9 +22,14 @@ router.post('/', async (req, res) => {
   const { companyname, email, password, role } = req.body;
 
   try {
+    // Create a new company
     const company = new Company({ companyname, email, password, role });
-    const newCompany = await company.save();
-    res.status(201).json(newCompany);    
+    const newCompany = await user.save();
+
+    // Generate JWT token
+    const token = jwt.sign({ companyId: newCompany._id }, config.get('jwtSecret'));
+
+    res.status(201).json({ newCompany, token });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

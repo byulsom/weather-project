@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
+const config = require('config');
+
 
 // Getting all users
 router.get('/', async (req, res) => {
@@ -18,17 +21,24 @@ router.get('/:id', getUser, (req, res) => {
 });
 
 // Creating a new user
+
 router.post('/', async (req, res) => {
   const { username, email, password, role } = req.body;
 
   try {
+    // Create a new user
     const user = new User({ username, email, password, role });
     const newUser = await user.save();
-    res.status(201).json(newUser);    
+
+    // Generate JWT token
+    const token = jwt.sign({ userId: newUser._id }, config.get('jwtSecret'));
+
+    res.status(201).json({ newUser, token });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
+
 
 // Updating a user
 router.patch('/:id', getUser, async (req, res) => {
