@@ -24,7 +24,7 @@ const projectSchema = new mongoose.Schema({
     },
   ],
   userid: {
-    type: String,
+    type: String,  // Change the type to String
     required: true,
   },
   postedAt: {

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../models/project');
+const mongoose = require('mongoose');
 
 // Getting all projects
 router.get('/', async (req, res) => {
@@ -17,10 +18,11 @@ router.get('/:id', getProject, (req, res) => {
   res.json(res.project);
 });
 
-// Getting one project by userid
-router.get('/:userid', getProjectByUserId, (req, res) => {
-  res.json(res.project);
+// Getting project by userid
+router.get('/user/:userid', getProjectsByUserId, (req, res) => {
+  res.json(res.projects);
 });
+
 
 
 // Create a project
@@ -106,20 +108,23 @@ async function getProject(req, res, next) {
 }
 
 // Middleware to get a project by userid
-async function getProjectByUserId(req, res, next) {
+async function getProjectsByUserId(req, res, next) {
   const { userid } = req.params;
 
   try {
-    const project = await Project.findOne({ userid });
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' });
+    const projects = await Project.find({ userid: userid }); // Use "userid" instead of "_id"
+
+    if (projects.length === 0) {
+      return res.status(404).json({ message: 'Projects not found' });
     }
-    res.project = project;
+
+    res.projects = projects;
     next();
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 }
+
 
 
 
