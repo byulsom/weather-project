@@ -34,13 +34,13 @@ const authenticateToken = (req, res, next) => {
 router.get('/', authenticateToken, (req, res) => {
   // Access the user information from req.decoded
   const userId = req.decoded.userId;
-  const unlimtId = req.decoded.unlmitId;
+  const unlimitId = req.decoded.unlimitId;
   const companyId = req.decoded.companyId;
   // Handle the request and send the response
   
   const response = {
     userId: userId,
-    unlimtId: unlimtId,
+    unlimitId: unlimitId,
     companyId: companyId
   };
 
