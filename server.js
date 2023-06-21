@@ -20,7 +20,7 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY;
 const refreshKey = process.env.REFRESH_KEY;
-const profile = require('./routes/profile');
+const profileRouter = require('./routes/profile');
 
 ///// DB
 mongoose
