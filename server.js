@@ -22,7 +22,6 @@ const secretKey = process.env.SECRET_KEY;
 const refreshKey = process.env.REFRESH_KEY;
 
 
-
 ///// DB
 mongoose
   .connect(config.mongoURI)
@@ -33,7 +32,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-///// use route
+///// route
 app.use('/weather/user', userRouter);
 app.use('/weather/company', companyRouter);
 app.use('/weather/unlimit', unlimitRouter);
@@ -42,30 +41,62 @@ app.use('/weather/product', productRouter);
 
 
 
+const authenticateToken = require('./jwt');
 // Login user
-app.post("/weather/user/login", async (req, res) => {
+app.get('/weather/profile', authenticateToken, async (req, res) => {
+  // Access the user information from req.decoded
+  const userId = req.decoded.userId;
+
   try {
-    const user = await User.findOne({ username: req.body.username });
+    const user = await User.findById(userId);
+
     if (!user) {
-      return res.json({
-        loginSuccess: false,
-        message: "Check username.",
+      return res.status(404).json({
+        message: 'User not found',
       });
     }
 
-    const isMatch = await user.comparePassword(req.body.password);
+    // Construct the response data based on the user's profile
+    const userProfile = {
+      username: user.username,
+      email: user.email,
+      // Add more fields as needed
+    };
+
+    // Send the response with the user's profile
+    res.status(200).json(userProfile);
+  } catch (err) {
+    res.status(500).json({
+      message: 'Error retrieving user profile',
+    });
+  }
+});
+
+app.post('/weather/user/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.json({
+        loginSuccess: false,
+        message: 'Check username.',
+      });
+    }
+
+    const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
       return res.json({
         loginSuccess: false,
-        message: "Wrong Password",
+        message: 'Wrong Password',
       });
     }
 
-    const token = jwt.sign({ userId: user._id }, secretKey);
+    const token = user.generateAuthToken();
 
     res
-      .cookie("hasVisited", token, { httpOnly: true })
+      .cookie('hasVisited', token, { httpOnly: true })
       .status(200)
       .json({ loginSuccess: true, userid: user._id.toString() });
   } catch (err) {
@@ -75,76 +106,129 @@ app.post("/weather/user/login", async (req, res) => {
 
 
 
-
-
-
 // Login company
-app.post("/weather/company/login", async (req, res) => {
+app.get('/weather/profile', authenticateToken, async (req, res) => {
+  // Access the company information from req.decoded
+  const companyId = req.decoded.companyId;
+
   try {
-    const company = await Company.findOne({ companyname: req.body.companyname });
+    const company = await Company.findById(companyId);
+
     if (!company) {
-      return res.json({
-        loginSuccess: false,
-        message: "Check username.",
+      return res.status(404).json({
+        message: 'Company not found',
       });
     }
 
-    const isMatch = await company.comparePassword(req.body.password);
+    // Construct the response data based on the company's profile
+    const companyProfile = {
+      companyname: company.companyname,
+      email: company.email,
+      // Add more fields as needed
+    };
+
+    // Send the response with the company's profile
+    res.status(200).json(companyProfile);
+  } catch (err) {
+    res.status(500).json({
+      message: 'Error retrieving company profile',
+    });
+  }
+});
+
+app.post('/weather/company/login', async (req, res) => {
+  try {
+    const { companyname, password } = req.body;
+
+    const company = await Company.findOne({ companyname });
+    if (!company) {
+      return res.json({
+        loginSuccess: false,
+        message: 'Check companyname.',
+      });
+    }
+
+    const isMatch = await company.comparePassword(password);
 
     if (!isMatch) {
       return res.json({
         loginSuccess: false,
-        message: "Wrong Password",
+        message: 'Wrong Password',
       });
     }
 
-    const token = jwt.sign({ companyId: company._id }, secretKey);
+    const token = company.generateAuthToken();
 
     res
-      .cookie("hasVisited", token, { httpOnly: true })
+      .cookie('hasVisited', token, { httpOnly: true })
       .status(200)
-      .json({ loginSuccess: true, companyId: company._id.toString() });
+      .json({ loginSuccess: true, companyid: company._id.toString() });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
 // Login unlimit
-app.post("/weather/unlimit/login", async (req, res) => {
+app.get('/weather/profile', authenticateToken, async (req, res) => {
+  // Access the unlimit information from req.decoded
+  const unlimitId = req.decoded.unlimitId;
+
   try {
-    const unlimit = await Unlimit.findOne({ unlimitname: req.body.unlimitname });
+    const unlimit = await Unlimit.findById(unlimitId);
 
     if (!unlimit) {
-      return res.json({
-        loginSuccess: false,
-        message: "Check username.",
+      return res.status(404).json({
+        message: 'Unlimit not found',
       });
     }
 
-    const isMatch = await unlimit.comparePassword(req.body.password);
+    // Construct the response data based on the unlimit's profile
+    const unlimitProfile = {
+      unlimitname: unlimit.unlimitname,
+      email: unlimit.email,
+      // Add more fields as needed
+    };
+
+    // Send the response with the unlimit's profile
+    res.status(200).json(unlimitProfile);
+  } catch (err) {
+    res.status(500).json({
+      message: 'Error retrieving unlimit profile',
+    });
+  }
+});
+
+app.post('/weather/unlimit/login', async (req, res) => {
+  try {
+    const { unlimitname, password } = req.body;
+
+    const unlimit = await Unlimit.findOne({ unlimitname });
+    if (!unlimit) {
+      return res.json({
+        loginSuccess: false,
+        message: 'Check unlimitname.',
+      });
+    }
+
+    const isMatch = await unlimit.comparePassword(password);
 
     if (!isMatch) {
       return res.json({
         loginSuccess: false,
-        message: "Wrong Password",
+        message: 'Wrong Password',
       });
     }
 
-    const token = jwt.sign({ unlimitId: unlimit._id }, secretKey);
+    const token = unlimit.generateAuthToken();
 
     res
-      .cookie("hasVisited", token, { httpOnly: true })
+      .cookie('hasVisited', token, { httpOnly: true })
       .status(200)
-      .json({ loginSuccess: true, unlimitId: unlimit._id });
+      .json({ loginSuccess: true, unlimitid: unlimit._id.toString() });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
-
-
-
-
-
 
 
 // open api

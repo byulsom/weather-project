@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Company = require('../models/company');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 
-// Getting all companies
+// Getting all companys
 router.get('/', async (req, res) => {
   try {
-    const companies = await Company.find();
-    res.json(companies);
+    const companys = await Company.find();
+    res.json(companys);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -24,7 +26,7 @@ router.post('/', async (req, res) => {
   try {
     // Create a new company
     const company = new Company({ companyname, email, password, role });
-    const newCompany = await user.save();
+    const newCompany = await company.save();
 
     // Generate JWT token
     const token = jwt.sign({ companyId: newCompany._id }, config.get('jwtSecret'));
@@ -67,15 +69,19 @@ router.delete('/:id', async (req, res) => {
 
 async function getCompany(req, res, next) {
   try {
-    const company = await Company.findById(req.params.id);
+    const companyId = req.params.id;
+    const company = await Company.findById(companyId);
+
     if (!company) {
       return res.status(404).json({ message: 'Company not found' });
     }
+
     res.company = company;
     next();
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 }
+
 
 module.exports = router;

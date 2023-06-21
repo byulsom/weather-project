@@ -59,21 +59,21 @@ companySchema.methods.comparePassword = async function (plainPassword) {
   }
 };
 
-companySchema.methods.generateToken = async function () {
-  try {
-    const company = this;
-    // jsonwebtoken을 사용해서 토큰 생성
-    const token = jwt.sign({ companyId: company._id }, secretKey);
-
-    company.token = token;
-    await company.save(); // Save the updated document without a callback
-    return company;
-  } catch (err) {
-    throw err;
-  }
+companySchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ companyId: this._id }, process.env.SECRET_KEY);
+  this.token = token;
+  this.tokenExp = Math.floor(Date.now() / 1000) + 15 * 60; // Token expiration time: 15 minutes
+  return token;
 };
 
-
+companySchema.methods.verifyAuthToken = function (token) {
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    return decoded.companyId === this._id.toString();
+  } catch (err) {
+    return false;
+  }
+};
 
 const Company = mongoose.model('company', companySchema);
 

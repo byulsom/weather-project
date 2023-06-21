@@ -59,23 +59,22 @@ unlimitSchema.methods.comparePassword = async function (plainPassword) {
   }
 };
 
-unlimitSchema.methods.generateToken = async function () {
-  try {
-    const unlimit = this;
-    // jsonwebtoken을 사용해서 토큰 생성
-    const token = jwt.sign({ unlimitId: unlimit._id }, secretKey);
+unlimitSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ unlimitId: this._id }, process.env.SECRET_KEY);
+  this.token = token;
+  this.tokenExp = Math.floor(Date.now() / 1000) + 15 * 60; // Token expiration time: 15 minutes
+  return token;
+};
 
-    unlimit.token = token;
-    await unlimit.save(); // Save the updated document without a callback
-    return unlimit;
+unlimitSchema.methods.verifyAuthToken = function (token) {
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    return decoded.unlimitId === this._id.toString();
   } catch (err) {
-    throw err;
+    return false;
   }
 };
 
-
-
-
-const Unlimit = mongoose.model('Unlimit', unlimitSchema);
+const Unlimit = mongoose.model('unlimit', unlimitSchema);
 
 module.exports = Unlimit;

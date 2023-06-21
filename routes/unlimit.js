@@ -1,16 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Unlimit = require('../models/unlimit');
-const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
-
-// Getting all unlimit
+// Getting all unlimits
 router.get('/', async (req, res) => {
   try {
-    const unlimit = await Unlimit.find();
-    res.json(unlimit);
+    const unlimits = await Unlimit.find();
+    res.json(unlimits);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -28,7 +26,7 @@ router.post('/', async (req, res) => {
   try {
     // Create a new unlimit
     const unlimit = new Unlimit({ unlimitname, email, password, role });
-    const newUnlimit = await user.save();
+    const newUnlimit = await unlimit.save();
 
     // Generate JWT token
     const token = jwt.sign({ unlimitId: newUnlimit._id }, config.get('jwtSecret'));
@@ -38,7 +36,6 @@ router.post('/', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-  
 
 // Updating a unlimit
 router.patch('/:id', getUnlimit, async (req, res) => {
@@ -59,35 +56,32 @@ router.patch('/:id', getUnlimit, async (req, res) => {
   }
 });
 
-
 // Deleting a unlimit
 router.delete('/:id', async (req, res) => {
-    try {
-      const unlimitId = req.params.id;
-      await Unlimit.findByIdAndDelete(unlimitId);
-      res.json({ message: 'unlimit deleted' });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  });
-  
-  
+  try {
+    const unlimitId = req.params.id;
+    await Unlimit.findByIdAndDelete(unlimitId);
+    res.json({ message: 'Unlimit deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 async function getUnlimit(req, res, next) {
   try {
-    const unlimit = await Unlimit.findById(req.params.id);
+    const unlimitId = req.params.id;
+    const unlimit = await Unlimit.findById(unlimitId);
+
     if (!unlimit) {
-      return res.status(404).json({ message: 'Unlimituser not found' });
+      return res.status(404).json({ message: 'Unlimit not found' });
     }
+
     res.unlimit = unlimit;
     next();
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 }
-
-
-
 
 
 module.exports = router;
