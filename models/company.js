@@ -66,14 +66,21 @@ companySchema.methods.generateAuthToken = function () {
   return token;
 };
 
-companySchema.methods.verifyAuthToken = function (token) {
+companySchema.methods.verifyAuthToken = async function (token) {
   try {
+    const company = await Company.findOne({ token: token });
+
+    if (!company) {
+      return false; // Token not found in the database
+    }
+
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    return decoded.companyId === this._id.toString();
+    return decoded.companyId === company._id.toString();
   } catch (err) {
-    return false;
+    return false; // Token verification failed
   }
 };
+
 
 const Company = mongoose.model('company', companySchema);
 

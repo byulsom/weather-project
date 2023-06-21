@@ -66,14 +66,21 @@ userSchema.methods.generateAuthToken = function () {
   return token;
 };
 
-userSchema.methods.verifyAuthToken = function (token) {
+userSchema.methods.verifyAuthToken = async function (token) {
   try {
+    const user = await User.findOne({ token: token });
+
+    if (!user) {
+      return false; // Token not found in the database
+    }
+
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    return decoded.userId === this._id.toString();
+    return decoded.userId === user._id.toString();
   } catch (err) {
-    return false;
+    return false; // Token verification failed
   }
 };
+
 
 const User = mongoose.model('user', userSchema);
 

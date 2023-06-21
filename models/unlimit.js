@@ -66,14 +66,21 @@ unlimitSchema.methods.generateAuthToken = function () {
   return token;
 };
 
-unlimitSchema.methods.verifyAuthToken = function (token) {
+unlimitSchema.methods.verifyAuthToken = async function (token) {
   try {
+    const unlimit = await Unlimit.findOne({ token: token });
+
+    if (!unlimit) {
+      return false; // Token not found in the database
+    }
+
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    return decoded.unlimitId === this._id.toString();
+    return decoded.unlimitId === unlimit._id.toString();
   } catch (err) {
-    return false;
+    return false; // Token verification failed
   }
 };
+
 
 const Unlimit = mongoose.model('unlimit', unlimitSchema);
 
