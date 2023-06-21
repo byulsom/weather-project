@@ -38,7 +38,6 @@ router.get('/', authenticateToken, (req, res) => {
   const companyId = req.decoded.companyId;
   // Handle the request and send the response
   
-  // Example response
   const response = {
     userId: userId,
     unlimtId: unlimtId,
