@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+const Company = require('../models/company');
+const Unlimit = require('../models/unlimit');
 
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.hasVisited; // Assuming the token is stored in a cookie named 'hasVisited'
@@ -32,7 +35,7 @@ const authenticateToken = (req, res, next) => {
 };
 
 // Retrieve User Profile
-router.get('/users/profile', authenticateToken, async (req, res) => {
+router.get('/user/profile', authenticateToken, async (req, res) => {
   // Access the user information from req.decoded
   const userId = req.decoded.userId;
 
@@ -62,7 +65,7 @@ router.get('/users/profile', authenticateToken, async (req, res) => {
 });
 
 // Retrieve Company Profile
-router.get('/companies/profile', authenticateToken, async (req, res) => {
+router.get('/company/profile', authenticateToken, async (req, res) => {
   // Access the company information from req.decoded
   const companyId = req.decoded.companyId;
 
@@ -92,7 +95,7 @@ router.get('/companies/profile', authenticateToken, async (req, res) => {
 });
 
 // Retrieve Unlimit Profile
-router.get('/unlimits/profile', authenticateToken, async (req, res) => {
+router.get('/unlimity/profile', authenticateToken, async (req, res) => {
   // Access the unlimit information from req.decoded
   const unlimitId = req.decoded.unlimitId;
 

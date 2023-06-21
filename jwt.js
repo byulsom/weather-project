@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const authenticateToken = (req, res, next) => {
-  const token = req.cookies.hasVisited; // Assuming the token is stored in a cookie named 'hasVisited'
+  const token = req.cookies.hasVisited; 
 
   if (!token) {
     return res.status(401).json({

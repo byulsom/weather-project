@@ -41,7 +41,7 @@ app.use('/weather/product', productRouter);
 app.use('/weather/profile', profileRouter);
 
 
-const authenticateToken = require('./jwt');
+
 // Login user
 app.post('/weather/user/login', async (req, res) => {
   try {
