@@ -31,20 +31,94 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-router.get('/', authenticateToken, (req, res) => {
+// Retrieve User Profile
+router.get('/users/profile', authenticateToken, async (req, res) => {
   // Access the user information from req.decoded
   const userId = req.decoded.userId;
-  const unlimitId = req.decoded.unlimitId;
-  const companyId = req.decoded.companyId;
-  // Handle the request and send the response
-  
-  const response = {
-    userId: userId,
-    unlimitId: unlimitId,
-    companyId: companyId
-  };
 
-  res.status(200).json(response);
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found',
+      });
+    }
+
+    // Construct the response data based on the user's profile
+    const userProfile = {
+      username: user.username,
+      email: user.email,
+      // Add more fields as needed
+    };
+
+    // Send the response with the user's profile
+    res.status(200).json(userProfile);
+  } catch (err) {
+    res.status(500).json({
+      message: 'Error retrieving user profile',
+    });
+  }
+});
+
+// Retrieve Company Profile
+router.get('/companies/profile', authenticateToken, async (req, res) => {
+  // Access the company information from req.decoded
+  const companyId = req.decoded.companyId;
+
+  try {
+    const company = await Company.findById(companyId);
+
+    if (!company) {
+      return res.status(404).json({
+        message: 'Company not found',
+      });
+    }
+
+    // Construct the response data based on the company's profile
+    const companyProfile = {
+      companyname: company.companyname,
+      email: company.email,
+      // Add more fields as needed
+    };
+
+    // Send the response with the company's profile
+    res.status(200).json(companyProfile);
+  } catch (err) {
+    res.status(500).json({
+      message: 'Error retrieving company profile',
+    });
+  }
+});
+
+// Retrieve Unlimit Profile
+router.get('/unlimits/profile', authenticateToken, async (req, res) => {
+  // Access the unlimit information from req.decoded
+  const unlimitId = req.decoded.unlimitId;
+
+  try {
+    const unlimit = await Unlimit.findById(unlimitId);
+
+    if (!unlimit) {
+      return res.status(404).json({
+        message: 'Unlimit not found',
+      });
+    }
+
+    // Construct the response data based on the unlimit's profile
+    const unlimitProfile = {
+      unlimitname: unlimit.unlimitname,
+      email: unlimit.email,
+      // Add more fields as needed
+    };
+
+    // Send the response with the unlimit's profile
+    res.status(200).json(unlimitProfile);
+  } catch (err) {
+    res.status(500).json({
+      message: 'Error retrieving unlimit profile',
+    });
+  }
 });
 
 module.exports = router;
