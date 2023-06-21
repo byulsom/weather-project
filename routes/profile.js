@@ -34,9 +34,18 @@ const authenticateToken = (req, res, next) => {
 router.get('/', authenticateToken, (req, res) => {
   // Access the user information from req.decoded
   const userId = req.decoded.userId;
-
+  const unlimtId = req.decoded.unlmitId;
+  const companyId = req.decoded.companyId;
   // Handle the request and send the response
-  // ...
+  
+  // Example response
+  const response = {
+    userId: userId,
+    unlimtId: unlimtId,
+    companyId: companyId
+  };
+
+  res.status(200).json(response);
 });
 
 module.exports = router;
