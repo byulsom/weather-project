@@ -20,7 +20,11 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY;
 const refreshKey = process.env.REFRESH_KEY;
-const profileRouter = require('./routes/profile');
+const pvWattsRateRouter = require('./routes/calculate');
+const cronjobRouter = require('./routes/cronjob');
+const weatherRouter= require('./routes/weather');
+const calculateRouter= require('./routes/calculate');
+
 
 ///// DB
 mongoose
@@ -38,8 +42,10 @@ app.use('/weather/company', companyRouter);
 app.use('/weather/unlimit', unlimitRouter);
 app.use('/weather/project', projectRouter);
 app.use('/weather/product', productRouter);
-app.use('/weather/profile', profileRouter);
-
+app.use('/weather/pvwatt', pvWattsRateRouter);
+app.use('/weather/weather', weatherRouter);
+app.use('/weather/cronjob', cronjobRouter);
+app.use('/weather/calculate', calculateRouter);
 
 
 // Login user
@@ -69,11 +75,13 @@ app.post('/weather/user/login', async (req, res) => {
     res
       .cookie('hasVisited', token, { httpOnly: true })
       .status(200)
-      .json({ loginSuccess: true, userid: user._id.toString() });
+      .json({ loginSuccess: true, token });
+
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
+
 
 
 
@@ -144,72 +152,7 @@ app.post('/weather/unlimit/login', async (req, res) => {
 });
 
 
-
-// open api
-const weatherModule = require('./weather/fetchweather');
-
-
-app.get('/weather/fetchweather', async (req, res) => {
-  try {
-    const { latitude, longitude } = req.query;
-    
-    // Check if latitude and longitude are provided
-    if (!latitude || !longitude) {
-      return res.status(400).json({ error: 'Latitude and longitude are required' });
-    }
-    
-    // Fetch weather data using fetchWeatherData function from weather module
-    const weather = await weatherModule.fetchWeatherData(latitude, longitude); 
-
-    // Return the weather data in the response
-    res.json(weather);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch weather data' });
-  }
-});
-
-
-app.get('/weather/location', async (req, res) => {
-  try {
-    const { latitude, longitude } = req.query;
-    
-    // Check if latitude and longitude are provided
-    if (!latitude || !longitude) {
-      return res.status(400).json({ error: 'Latitude and longitude are required' });
-    }
-    
-    // Fetch location data using fetchLocation function from weather module
-    const location = await weatherModule.fetchLocation(latitude, longitude); 
-
-    // Return the location data in the response
-    res.json(location);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch location data' });
-  }
-});
-
-
-app.get('/weather/geo', async (req, res) => {
-  try {
-    const { input } = req.query;
-    
-    // Check if input is provided
-    if (!input) {
-      return res.status(400).json({ error: 'Input is required' });
-    }
-    
-    // Fetch geo data using fetchGeo function from weather module
-    const geo = await weatherModule.fetchGeo(input); 
-
-    // Return the geo data in the response
-    res.json(geo);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch geo data' });
-  }
-});
-
-
-
+// authorizeuser access company product
 const authorizeUser = (req, res, next) => {
   const { companyId } = req.params; // Assuming you pass the company ID as a parameter
 
@@ -238,8 +181,6 @@ app.post('/weather/email', (req, res) => {
       res.status(500).json({ success: false, message: 'Failed to send email' });
     });
 });
-
-
 
 
 
