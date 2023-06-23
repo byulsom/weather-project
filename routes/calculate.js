@@ -1,44 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
-const config = require('../config/default');
-const { calculatePVWattsRate } = require('../util/calculate');
+const { fetchPVWattData, calculatePVWattsRate } = require('../util/calculate');
 
 // Define the route for calculating the rate of PV/Watts per day
 router.get('/', async (req, res) => {
-  // Extract the necessary parameters from the request query
-  const {
-    totalCapacity,
-    averageSolarIrradiance,
-    cloudCover,
-    systemLoss,
-    powerPeak,
-    orientation,
-    tilt,
-    area,
-    longitude,
-    latitude,
-  } = req.query;
+  // Extract the latitude and longitude from the request query parameters
+  const { latitude, longitude } = req.query;
 
   try {
-    // Make the API call to fetch the real solar data
-    const response = await axios.get(config.pvwattUrl, {
-      params: {
-        lat: latitude,
-        lon: longitude,
-        // Additional parameters for the PVWatt API can be added here
-      },
-    });
+    // Call the fetchPVWattData function to get solar data
+    const data = await fetchPVWattData(latitude, longitude);
 
-    // Extract the necessary solar data from the response
-    const { data } = response;
-
-    // Extract the relevant data from the PVWatt API response and pass it to the calculation function
-    const pvWattRate = calculatePVWattsRate(
+    // Extract necessary data from the response
+    const {
       totalCapacity,
-      data.ghi,
+      averageSolarIrradiance,
       cloudCover,
-      systemLoss,
+      powerPeak,
+      orientation,
+      tilt,
+      area,
+    } = data;
+
+    // Calculate the rate of PV/Watts per day
+    const rate = calculatePVWattsRate(
+      totalCapacity,
+      averageSolarIrradiance,
+      cloudCover,
+      undefined, // Use the default system loss value
       powerPeak,
       orientation,
       tilt,
@@ -48,10 +37,10 @@ router.get('/', async (req, res) => {
     );
 
     // Return the calculated rate in the response
-    res.json({ pvWattRate });
+    res.json({ rate });
   } catch (error) {
-    console.error('Error fetching PVWatt data:', error);
-    res.status(500).json({ message: 'Error fetching PVWatt data' });
+    console.error('Error calculating PVWatt rate:', error);
+    res.status(500).json({ message: 'Error calculating PVWatt rate' });
   }
 });
 

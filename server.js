@@ -23,7 +23,7 @@ const refreshKey = process.env.REFRESH_KEY;
 const pvWattsRateRouter = require('./routes/calculate');
 const cronjobRouter = require('./routes/cronjob');
 const weatherRouter= require('./routes/weather');
-const calculateRouter= require('./routes/calculate');
+const pvwattRouter= require('./routes/calculate');
 
 
 ///// DB
@@ -45,7 +45,7 @@ app.use('/weather/product', productRouter);
 app.use('/weather/pvwatt', pvWattsRateRouter);
 app.use('/weather/weather', weatherRouter);
 app.use('/weather/cronjob', cronjobRouter);
-app.use('/weather/calculate', calculateRouter);
+app.use('/weather/pvwatt', pvwattRouter);
 
 
 // Login user
