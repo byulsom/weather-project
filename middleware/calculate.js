@@ -25,7 +25,7 @@ function calculatePVWattsRate(
   totalCapacity,
   averageSolarIrradiance,
   cloudCover,
-  systemLoss = 14, // Default system loss percentage of 14%
+  systemLoss = 14,
   powerPeak,
   orientation,
   tilt,

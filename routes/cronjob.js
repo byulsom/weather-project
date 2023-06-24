@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { updateCronJob } = require('../weather/cronjob');
-const CronJobData = require('../models/cronjob');
+const { updateCronJob } = require('../models/cronjob');
+const CronJobData = require('../middleware/cronjob');
 
 // cronjob
 router.post('/', async (req, res) => {

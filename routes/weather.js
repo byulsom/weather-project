@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const fetchWeatherData = require('../weather/fetchweather');
+const fetchWeatherData = require('../middleware/fetchweather');
 
 
 /// current weather

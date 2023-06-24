@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { fetchPVWattData, calculatePVWattsRate } = require('../util/calculate');
+const { fetchPVWattData, calculatePVWattsRate } = require('../middleware/calculate');
 
 // Define the route for calculating the rate of PV/Watts per day
 router.get('/', async (req, res) => {
